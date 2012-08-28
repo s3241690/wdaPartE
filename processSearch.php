@@ -1,7 +1,5 @@
-
-
 <?php
-
+session_start();
 require_once('connect.inc');
 
 
@@ -167,7 +165,7 @@ if(isset($costLowerBound)){
 /* If grape_variety selected create IN subquery so that all the varieties of the wine can still be Concatinated in the main select clause*/	
 if(isset($grapeVariety)){
  $query .="AND wine.wine_id IN (SELECT wine.wine_id FROM wine, wine_variety, grape_variety WHERE wine_variety.variety_id "
-		."= grape_variety.variety_id AND wine.wine_id = wine_variety.wine_id AND grape_variety.variety LIKE 'RED') ";
+		."= grape_variety.variety_id AND wine.wine_id = wine_variety.wine_id AND grape_variety.variety LIKE '{$grapeVariety}') ";
 }
  
 /* Group by Wine ID*/ 
@@ -192,15 +190,26 @@ if (isset($minWinesOrdered)){
 
 $result = $pdo->query($query);
 
+/* Create a local Array with the result contents*/	
+if(isset($_SESSION['views'])){
+		$_SESSION['history'] = array();
+		$j = 0;
+		while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+			$wineDetails[$j] = $row;
+			array_push($_SESSION['history'], $wineDetails[$j]['wine_id']);
+			$j++;	
+		}
 	
-  $j = 0;
-  while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-	$wineDetails[$j] = $row;
+} 
+else {
+	$j = 0;
+	while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+		$wineDetails[$j] = $row;
+		$j++;
+	}
+}
 	
-	$j++;
-	
-  }
-  
+
 
   
   
@@ -216,19 +225,21 @@ $result = $pdo->query($query);
 		$smartyEngine->cache_dir = USER_HOME_DIR . "/php/Smarty-Work-Dir/cache";
 		$smartyEngine->config_dir = USER_HOME_DIR . "/php/Smarty-Work-Dir/configs";
 		$smartyEngine->display('header.tpl');
-	
-	if($numOfResults > 0){
-
+		
+		$smartyEngine->assign('views', $_SESSION['views']);
 		$smartyEngine->assign('title', 'WDA: Search Results');
 		$smartyEngine->assign('returnString', $returnString);
+	if($numOfResults > 0){
+
+
 		$smartyEngine->assign('wines', $wineDetails);
-		$smartyEngine->display('searchResults.tpl');
+		$smartyEngine->display('searchResultsPartE.tpl');
 	}
 	else{
 		$smartyEngine->display('noResults.tpl');
 	}
 	
-	$smartyEngine->display('footer.tpl');
+	$smartyEngine->display('footerPartE.tpl');
 
 ?>
 

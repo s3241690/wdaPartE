@@ -34,10 +34,15 @@ border-collapse:collapse;
 
 a, a:visited, a:hover
 {
+	color: #ccc;
 	font-size:12px;
 	text-decoration: none;
 	margin: 10px;
 	
+}
+a:hover
+{
+	color: blue;
 }
 
 th, td

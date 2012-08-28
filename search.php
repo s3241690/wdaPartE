@@ -1,4 +1,5 @@
 <?php 
+	session_start();
 	require_once('connect.inc');
 	
 	$pdo = createPDO();
@@ -109,8 +110,7 @@ if($_GET['errors'] != null)
 	default:
 		echo '<p>Please enter your search requirments below:</p>';
 	}
-	
-
+		$smartyEngine->assign('views', $_SESSION['views']);
 		$smartyEngine->assign('wine', $wine);
 		$smartyEngine->assign('winery', $winery);
 		$smartyEngine->assign('region', $region);
@@ -125,8 +125,8 @@ if($_GET['errors'] != null)
 		$smartyEngine->assign('yearMaximum', $yearMaximum);
 		$smartyEngine->assign('regionList', $regionList);
 		$smartyEngine->assign('grapeVarietyList', $grapeVarietyList);
-		$smartyEngine->display('search.tpl');
-		$smartyEngine->display('footer.tpl');
+		$smartyEngine->display('searchPartE.tpl');
+		$smartyEngine->display('footerPartE.tpl');
 
 	// Destroy the PDO
 	destroyPDO($pdo);
